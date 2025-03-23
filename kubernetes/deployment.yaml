@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-predictor
+  labels:
+    app: k8s-predictor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-predictor
+  template:
+    metadata:
+      labels:
+        app: k8s-predictor
+    spec:
+      containers:
+      - name: k8s-predictor
+        image: k8s-predictor:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: metrics
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        env:
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: model-volume
+          mountPath: /app/models
+        - name: data-volume
+          mountPath: /app/data
+      volumes:
+      - name: model-volume
+        persistentVolumeClaim:
+          claimName: model-pvc
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-predictor
+spec:
+  selector:
+    app: k8s-predictor
+  ports:
+  - port: 8000
+    targetPort: metrics
+    name: metrics
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8s-predictor-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-predictor-role-binding
+subjects:
+- kind: ServiceAccount
+  name: k8s-predictor
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: k8s-predictor-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-predictor 
