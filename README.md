@@ -70,14 +70,6 @@ predictor = DeviceHealthPredictor('path_to_model.joblib')
 results = predictor.predict(device_data)
 ```
 
-### Documentation
-
-Generate project documentation:
-```bash
-cd inference
-python create_docx.py
-```
-
 ## Model Details
 
 - Algorithm: Random Forest Regressor
