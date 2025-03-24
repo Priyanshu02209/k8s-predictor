@@ -84,4 +84,8 @@ results = predictor.predict(device_data)
 4. Push to the branch
 5. Create a Pull Request
 
+## Documentation
+
+Our documentation pdf is saved by the name Documentation PDF
+
 
