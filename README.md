@@ -86,6 +86,6 @@ results = predictor.predict(device_data)
 
 ## Documentation
 
-Our documentation pdf is saved by the name Documentation PDF
+Our documentation pdf is saved by the name Documentation Final
 
 
