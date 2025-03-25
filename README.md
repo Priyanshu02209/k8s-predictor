@@ -88,4 +88,7 @@ results = predictor.predict(device_data)
 
 Our documentation pdf is saved by the name Documentation Final
 
+## PPT Drive Link
+https://docs.google.com/presentation/d/1aNdqxk5wnNvuOW-5RwGXAQ5TWVUaKGvC/edit?usp=sharing&ouid=104718822624578687699&rtpof=true&sd=true
+
 
